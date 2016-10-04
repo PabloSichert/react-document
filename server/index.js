@@ -1,5 +1,9 @@
+import { stripIndents } from 'common-tags';
 import { exec } from 'child_process';
 import Koa from 'koa';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import Html from '../app/components/Html';
 import defaults from '../config.example';
 
 let config = defaults;
@@ -32,7 +36,13 @@ new Promise(resolve => {
     const app = new Koa;
 
     app.use(async context => {
-        context.body = 'Hello world!';
+        const document = renderToString(<Html />);
+
+        context.body = stripIndents`
+            <!doctype html>
+            ${document}
+        `;
+
         context.status = 200;
     });
 
