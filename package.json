@@ -1,0 +1,24 @@
+{
+  "name": "react-document",
+  "version": "0.0.0",
+  "description": "Full HTML document as representation of its application state - built with React",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PabloSichert/react-document.git"
+  },
+  "keywords": [
+    "react",
+    "document",
+    "universal"
+  ],
+  "author": "Pablo Sichert <mail@pablosichert.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PabloSichert/react-document/issues"
+  },
+  "homepage": "https://github.com/PabloSichert/react-document#readme"
+}
