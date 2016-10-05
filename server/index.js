@@ -12,34 +12,32 @@ import defaults from '../config.example';
 
 let config = defaults;
 
-new Promise(resolve => {
-    config = require('../config').default;
-
-    resolve();
-})
-.catch(async () => {
+(async () => {
     try {
-        await new Promise((resolve, reject) => {
-            exec('cp config.example.js config.js', error => {
-                if (error) {
-                    return reject(error);
-                }
-
-                resolve();
-            });
-        });
-
-        // eslint-disable-next-line no-console
-        console.info('No config file found, created new config.js');
+        config = require('../config').default;
     } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Failed trying to create config.js', error);
-    }
-})
-.then(() => {
-    return new Promise((resolve, reject) => {
-        const compiler = webpack(webpackConfig);
+        try {
+            await new Promise((resolve, reject) => {
+                exec('cp config.example.js config.js', error => {
+                    if (error) {
+                        return reject(error);
+                    }
 
+                    resolve();
+                });
+            });
+
+            // eslint-disable-next-line no-console
+            console.info('No config file found, created new config.js');
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('Failed trying to create config.js', error);
+        }
+    }
+
+    const compiler = webpack(webpackConfig);
+
+    const bundle = await new Promise((resolve, reject) => {
         compiler.run((err, stats) => {
             stats = stats.toJson({
                 hash: true
@@ -52,8 +50,7 @@ new Promise(resolve => {
             resolve(stats);
         });
     });
-})
-.then(bundle => {
+
     const app = new Koa;
     const router = new Router;
 
@@ -86,4 +83,4 @@ new Promise(resolve => {
 
     // eslint-disable-next-line no-console
     console.info(`App running at localhost:${port}`);
-});
+})();
