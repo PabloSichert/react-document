@@ -91,16 +91,16 @@ let config = defaults;
                         </App>
                     );
 
+                    const notFound = renderProps.routes.some(({ path }) =>
+                        path === '*'
+                    );
+
                     resolve({
-                        status: 200,
+                        status: notFound ? 404 : 200,
                         body: stripIndents`
                             <!doctype html>
                             ${document}
                         `
-                    });
-                } else {
-                    resolve({
-                        status: 400
                     });
                 }
             });
