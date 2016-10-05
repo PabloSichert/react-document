@@ -56,7 +56,11 @@ let config = defaults;
     const app = new Koa;
     const router = new Router;
 
-    router.get('/', async function() {
+    router.get('/*', async function(next) {
+        if (next instanceof Promise) {
+            return next;
+        }
+
         const {
             status,
             body,
