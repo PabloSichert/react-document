@@ -7,7 +7,9 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import Html from '../app/components/Html';
+import { match, RouterContext } from 'react-router';
+import routes from '../app/routes';
+import App from '../app/components/App';
 import defaults from '../config.example';
 
 let config = defaults;
@@ -55,18 +57,54 @@ let config = defaults;
     const router = new Router;
 
     router.get('/', async function() {
-        const document = renderToString(
-            <Html
-                scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
-            />
-        );
+        const {
+            status,
+            body,
+            redirect
+        } = await new Promise(resolve => {
+            match({
+                routes,
+                location: this.url
+            }, (error, redirectLocation, renderProps) => {
+                if (error) {
+                    resolve({
+                        status: 500,
+                        body: error.message
+                    });
+                } else if (redirectLocation) {
+                    resolve({
+                        status: 302,
+                        redirect: redirectLocation.pathname + redirectLocation.search
+                    });
+                } else if (renderProps) {
+                    const document = renderToString(
+                        <App
+                            scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
+                        >
+                            <RouterContext
+                                {...renderProps}
+                            />
+                        </App>
+                    );
 
-        this.body = stripIndents`
-            <!doctype html>
-            ${document}
-        `;
+                    resolve({
+                        status: 200,
+                        body: stripIndents`
+                            <!doctype html>
+                            ${document}
+                        `
+                    });
+                } else {
+                    resolve({
+                        status: 400
+                    });
+                }
+            });
+        });
 
-        this.status = 200;
+        this.status = status;
+        this.body = body;
+        this.redirect = redirect;
     });
 
     router.get('/static/*', async function() {

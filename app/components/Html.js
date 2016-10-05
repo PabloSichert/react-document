@@ -1,10 +1,14 @@
 import React, { PropTypes } from 'react';
 import { oneLine } from 'common-tags';
 
-export default function Html(props) {
+export default function Html(props, context) {
+    const {
+        children
+    } = props;
+
     const {
         scriptUrl
-    } = props;
+    } = context;
 
     return (
         <html>
@@ -18,12 +22,16 @@ export default function Html(props) {
                 <script defer src={scriptUrl} />
             </head>
             <body>
-                Hello world!
+                {children}
             </body>
         </html>
     );
 }
 
 Html.propTypes = {
+    children: PropTypes.node
+};
+
+Html.contextTypes = {
     scriptUrl: PropTypes.string.isRequired
 };
