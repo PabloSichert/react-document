@@ -1,6 +1,10 @@
+import { createReadStream } from 'fs';
 import { stripIndents } from 'common-tags';
 import { exec } from 'child_process';
+import webpack from 'webpack';
+import webpackConfig from './webpack.config';
 import Koa from 'koa';
+import Router from 'koa-router';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import Html from '../app/components/Html';
@@ -33,18 +37,46 @@ new Promise(resolve => {
     }
 })
 .then(() => {
+    return new Promise((resolve, reject) => {
+        const compiler = webpack(webpackConfig);
+
+        compiler.run((err, stats) => {
+            stats = stats.toJson({
+                hash: true
+            });
+
+            if (stats.errors.length) {
+                return reject(stats.errors);
+            }
+
+            resolve(stats);
+        });
+    });
+})
+.then(bundle => {
     const app = new Koa;
+    const router = new Router;
 
-    app.use(async context => {
-        const document = renderToString(<Html />);
+    router.get('/', async function() {
+        const document = renderToString(
+            <Html
+                scriptUrl={`/static/${bundle.hash}.js`}
+            />
+        );
 
-        context.body = stripIndents`
+        this.body = stripIndents`
             <!doctype html>
             ${document}
         `;
 
-        context.status = 200;
+        this.status = 200;
     });
+
+    router.get('/static/*', async function() {
+        this.body = createReadStream(`./build/${this.params[0]}`);
+    });
+
+    app.use(router.routes());
 
     const {
         port
