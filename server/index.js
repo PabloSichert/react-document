@@ -61,54 +61,61 @@ let config = defaults;
             return next;
         }
 
-        const {
-            status,
-            body,
-            redirect
-        } = await new Promise(resolve => {
-            match({
-                routes,
-                location: this.url
-            }, (error, redirectLocation, renderProps) => {
+        const runRoutes = config => new Promise((resolve, reject) => {
+            match(config, (error, redirectLocation, renderProps) => {
                 if (error) {
-                    resolve({
-                        status: 500,
-                        body: error.message
-                    });
-                } else if (redirectLocation) {
-                    resolve({
-                        status: 302,
-                        redirect: redirectLocation.pathname + redirectLocation.search
-                    });
-                } else if (renderProps) {
-                    const document = renderToString(
-                        <App
-                            scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
-                        >
-                            <RouterContext
-                                {...renderProps}
-                            />
-                        </App>
-                    );
-
-                    const notFound = renderProps.routes.some(({ path }) =>
-                        path === '*'
-                    );
-
-                    resolve({
-                        status: notFound ? 404 : 200,
-                        body: stripIndents`
-                            <!doctype html>
-                            ${document}
-                        `
-                    });
+                    return reject(error);
                 }
+
+                resolve({
+                    redirectLocation,
+                    renderProps
+                });
             });
         });
 
-        this.status = status;
-        this.body = body;
-        this.redirect = redirect;
+        try {
+            const {
+                redirectLocation,
+                renderProps
+            } = await runRoutes({
+                routes,
+                location: this.url
+            });
+
+            if (redirectLocation) {
+                const {
+                    pathname,
+                    search
+                } = redirectLocation;
+
+                this.status = 302;
+                this.redirect = pathname + search;
+            } else if (renderProps) {
+                const document = renderToString(
+                    <App
+                        scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
+                    >
+                        <RouterContext
+                            {...renderProps}
+                        />
+                    </App>
+                );
+
+                const notFound = renderProps.routes.some(({ path }) =>
+                    path === '*'
+                );
+
+                this.status = notFound ? 404 : 200,
+                this.body = stripIndents`
+                    <!doctype html>
+                    ${document}
+                `;
+            }
+        } catch (error) {
+            this.status = 500;
+            this.body = error.message;
+        }
     });
 
     router.get('/static/*', async function() {
