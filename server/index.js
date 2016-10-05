@@ -114,7 +114,11 @@ let config = defaults;
             }
         } catch (error) {
             this.status = 500;
-            this.body = error.message;
+            this.body = stripIndents`
+                ${error.message}
+
+                ${error.stack}
+            `;
         }
     });
 
