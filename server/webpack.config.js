@@ -4,7 +4,9 @@ const babel = JSON.parse(readFileSync('./.babelrc', 'utf8'));
 const presets = babel.presets || [];
 
 export default {
-    entry: './client',
+    entry: {
+        client: './client'
+    },
     module: {
         loaders: [
             {
@@ -23,6 +25,6 @@ export default {
     },
     output: {
         path: './build',
-        filename: '[hash].js'
+        filename: '[name].[hash].js'
     }
 };

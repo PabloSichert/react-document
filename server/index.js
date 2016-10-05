@@ -60,7 +60,7 @@ new Promise(resolve => {
     router.get('/', async function() {
         const document = renderToString(
             <Html
-                scriptUrl={`/static/${bundle.hash}.js`}
+                scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
             />
         );
 
