@@ -5,7 +5,11 @@ import App from '../app/components/App';
 import routes from '../app/routes';
 
 render((
-    <App scriptUrl={window.scriptUrl}>
+    <App
+        scriptUrl={window.scriptUrl}
+        protocol={window.protocol}
+        host={window.host}
+    >
         <Router
             history={browserHistory}
             routes={routes}

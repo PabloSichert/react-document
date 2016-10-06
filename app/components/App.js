@@ -3,11 +3,15 @@ import { Component, PropTypes } from 'react';
 export default class App extends Component {
     getChildContext() {
         const {
-            scriptUrl
+            scriptUrl,
+            protocol,
+            host
         } = this.props;
 
         return {
-            scriptUrl
+            scriptUrl,
+            protocol,
+            host
         };
     }
 
@@ -17,10 +21,14 @@ export default class App extends Component {
 }
 
 App.childContextTypes = {
-    scriptUrl: PropTypes.string.isRequired
+    scriptUrl: PropTypes.string.isRequired,
+    protocol: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired
 };
 
 App.propTypes = {
     scriptUrl: PropTypes.string.isRequired,
+    protocol: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired
 };

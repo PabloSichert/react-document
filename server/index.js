@@ -95,6 +95,8 @@ let config = defaults;
                 const document = renderToString(
                     <App
                         scriptUrl={`/static/${bundle.assetsByChunkName.client}`}
+                        protocol={this.protocol}
+                        host={this.host}
                     >
                         <RouterContext
                             {...renderProps}
