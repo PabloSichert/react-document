@@ -5,6 +5,7 @@ import webpack from 'webpack';
 import webpackConfig from './webpack.config';
 import Koa from 'koa';
 import Router from 'koa-router';
+import logger from './logger';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
@@ -127,6 +128,8 @@ let config = defaults;
     router.get('/static/*', async function() {
         this.body = createReadStream(`./build/${this.params[0]}`);
     });
+
+    app.use(logger());
 
     app.use(router.routes());
 
