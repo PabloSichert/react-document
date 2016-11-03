@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import webpack from 'webpack';
 import webpackConfig from './webpack.config';
 import Koa from 'koa';
+import createLogger from 'concurrency-logger';
 import Router from 'koa-router';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -128,6 +129,9 @@ let config = defaults;
         this.body = createReadStream(`./build/${this.params[0]}`);
     });
 
+    const logger = createLogger();
+
+    app.use(logger);
     app.use(router.routes());
 
     const {
