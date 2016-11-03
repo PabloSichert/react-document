@@ -25,6 +25,7 @@
   "homepage": "https://github.com/PabloSichert/react-document#readme",
   "devDependencies": {
     "babel-eslint": "^7.0.0",
+    "babel-plugin-transform-react-jsx": "^6.8.0",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0"
   },
