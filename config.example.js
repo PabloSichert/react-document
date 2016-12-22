@@ -1,3 +1,3 @@
 export default {
-    port: 3000
+    port: 0 // Get next available port from OS
 };

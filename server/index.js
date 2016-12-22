@@ -134,12 +134,8 @@ let config = defaults;
     app.use(logger);
     app.use(router.routes());
 
-    const {
-        port
-    } = config;
-
-    app.listen(port);
-
-    // eslint-disable-next-line no-console
-    console.info(`App running at localhost:${port}`);
+    const server = app.listen(config.port, () => {
+        // eslint-disable-next-line no-console
+        console.info(`http://0.0.0.0:${server.address().port}`);
+    });
 })();
